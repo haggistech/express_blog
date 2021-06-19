@@ -1,14 +1,14 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const Article = require('./models/article')
+const Users = require('./models/users')
 const articleRouter = require('./routes/articles')
+const usersRouter = require('./routes/users')
 const methodOverride = require('method-override')
 const dotenv = require('dotenv');
 const app = express()
 
 dotenv.config();
-
-console.log(process.env);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true
@@ -24,5 +24,5 @@ app.get('/', async (req, res) => {
 })
 
 app.use('/articles', articleRouter)
-
+app.use('/users', usersRouter)
 app.listen(5000)

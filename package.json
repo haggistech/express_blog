@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argon2": "^0.28.2",
     "dompurify": "^2.0.8",
     "dotenv": "^10.0.0",
     "ejs": "^3.0.1",
@@ -17,7 +18,7 @@
     "jsdom": "^16.2.1",
     "marked": "^0.8.0",
     "method-override": "^3.0.0",
-    "mongoose": "^5.9.4",
+    "mongoose": "^5.9.13",
     "slugify": "^1.4.0"
   },
   "devDependencies": {

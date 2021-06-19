@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Blog - Sign Up</title>
+</head>
+<body>
+  <div class="container">
+    <form action="/users" method="POST">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control"></input>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email" class="form-control"></input>
+          </div>
+          <div class="form-group">
+            <label for="sex">Sex</label>
+            <input type="text" required name="sex" id="sex" class="form-control"></input>
+          </div>
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" required name="location" id="location" class="form-control"></input>
+          </div>
+          
+          <a href="/" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+  </div>
+</body>
+</html>
