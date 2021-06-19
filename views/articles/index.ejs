@@ -10,6 +10,7 @@
 <body>
   <div class="container">
     <h1 class="mb-4">Blog Articles</h1>
+    <p>Welcome <%= user.username %></p>
     <a href="/articles/new" class="btn btn-success">New Article</a>
 
     <% articles.forEach(article => { %>
