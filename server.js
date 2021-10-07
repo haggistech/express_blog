@@ -5,10 +5,10 @@ const Users = require('./models/users')
 const articleRouter = require('./routes/articles')
 const usersRouter = require('./routes/users')
 const methodOverride = require('method-override')
+const passport = require('./config/passport')
 const dotenv = require('dotenv');
 const app = express()
-const passport = require('./config/passport')
-app.use(require('./routes'));
+
 
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
