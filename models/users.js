@@ -1,75 +1,43 @@
-const mongoose = require('mongoose')
-const marked = require('marked')
-const slugify = require('slugify')
-const createDomPurify = require('dompurify')
-const { JSDOM } = require('jsdom')
-const dompurify = createDomPurify(new JSDOM().window)
-var bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
-const usersSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  sex: {
-    type: String,
-  },
-  location: {
-    type: String,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  userid: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  verified: {
-    type: Boolean,
-    required: true,
-  }
-})
+const { Schema } = mongoose;
 
-//authenticate input against database
-usersSchema.statics.authenticate = function (email, password, callback) {
-  Users.findOne({ email: email })
-    .exec(function (err, user) {
-      if (err) {
-        return callback(err)
-      } else if (!user) {
-        var err = new Error('User not found.');
-        err.status = 401;
-        return callback(err);
-      }
-      bcrypt.compare(password, user.password, function (err, result) {
-        if (result === true) {
-          return callback(null, user);
-        } else {
-          return callback();
-        }
-      })
-    });
+const UsersSchema = new Schema({
+  email: String,
+  hash: String,
+  salt: String,
+});
+
+UsersSchema.methods.setPassword = function(password) {
+  this.salt = crypto.randomBytes(16).toString('hex');
+  this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+};
+
+UsersSchema.methods.validatePassword = function(password) {
+  const hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+  return this.hash === hash;
+};
+
+UsersSchema.methods.generateJWT = function() {
+  const today = new Date();
+  const expirationDate = new Date(today);
+  expirationDate.setDate(today.getDate() + 60);
+
+  return jwt.sign({
+    email: this.email,
+    id: this._id,
+    exp: parseInt(expirationDate.getTime() / 1000, 10),
+  }, 'secret');
 }
 
-usersSchema.pre('validate', function(next) {
-  if (this.username) {
-    this.userid = slugify(this.username, { lower: true, strict: true })
-  }
-  next()
-})
+UsersSchema.methods.toAuthJSON = function() {
+  return {
+    _id: this._id,
+    email: this.email,
+    token: this.generateJWT(),
+  };
+};
 
-var Users = mongoose.model('users', usersSchema)
-module.exports = Users;
-
+mongoose.model('Users', UsersSchema);
