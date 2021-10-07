@@ -39,4 +39,4 @@ app.get('/', async (req, res) => {
 
 app.use('/articles', articleRouter)
 app.use('/users', usersRouter)
-app.listen(5000)
+app.listen(process.env.PORT)
