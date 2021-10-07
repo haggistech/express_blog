@@ -17,12 +17,18 @@
     "dotenv": "^10.0.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
+    "express-jwt": "6.1.0",
     "express-session": "^1.17.2",
     "jsdom": "^16.2.1",
     "marked": "^0.8.0",
     "method-override": "^3.0.0",
     "mongodb": "^3.6.8",
     "mongoose": "^5.13.2",
+    "passport": "^0.5.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-local": "1.0.0",
+    "passport-twitter": "^1.0.4",
     "slugify": "^1.4.0"
   },
   "devDependencies": {
