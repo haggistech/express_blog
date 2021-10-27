@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "argon2": "^0.28.2",
+    "argon2-ffi": "^2.0.0",
     "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
     "connect-mongo": "^1.3.2",
     "dompurify": "^2.0.8",
     "dotenv": "^10.0.0",

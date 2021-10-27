@@ -1,85 +1,43 @@
-const express = require('express')
-const Users = require('../models/users')
-const argon2 = require('argon2')
-const router = express.Router()
+var crypto = require('crypto');
+var express = require('express');
+const router = express.Router();
+var bodyParser = require('body-parser');
+var argon2i = require('argon2-ffi').argon2i;
 
+var app = express();
+var jsonParser = bodyParser.json();
 
-router.get('/signup', (req, res) => {
-  res.render('users/signup', { user: new Users() })
-})
+var MIN_PASSWORD_LENGTH = 8;
+var MAX_PASSWORD_LENGTH = 160;
 
-router.get('/login', (req, res) => {
-  res.render('users/login')
-})
+var users = {};
 
-router.post('/login', function (req, res, next) {
-  // confirm that user typed same password twice
-  if (req.body.password !== req.body.passwordConf) {
-    var err = new Error('Passwords do not match.');
-    err.status = 400;
-    res.send("passwords dont match");
-    return next(err);
+router.post('/users', jsonParser, function (req, res) {
+  if (!req.body) { return res.sendStatus(400); }
+
+  if (!req.body.username || !req.body.password) {
+    return res.status(400).send('Missing username or password');
   }
 
-  if (req.body.email &&
-    req.body.username &&
-    req.body.password &&
-    req.body.passwordConf) {
+  if (users[req.body.username] !== undefined) {
+    return res.status(409).send('A user with the specified username already exists');
+  }
 
-    var userData = {
-      email: req.body.email,
-      username: req.body.username,
-      password: req.body.password,
-      verified: false,
-    }
+  if (req.body.password.length < MIN_PASSWORD_LENGTH ||
+      req.body.password > MAX_PASSWORD_LENGTH) {
+    return res.status(400).send(
+      'Password must be between ' + MIN_PASSWORD_LENGTH + ' and ' +
+      MAX_PASSWORD_LENGTH + ' characters long');
+  }
 
-    Users.create(userData, function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        req.session.userId = user._id;
-        return res.redirect('/success');
-      }
+  crypto.randomBytes(16, function (err, salt) {
+    if (err) throw err;
+    argon2i.hash(req.body.password, salt, function (err, hash) {
+      if (err) throw err;
+      users[req.body.username] = hash;
+      res.sendStatus(201);
     });
-
-  } else if (req.body.logemail && req.body.logpassword) {
-    Users.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
-      if (error || !user) {
-        var err = new Error('Wrong email or password.');
-        err.status = 401;
-        return next(err);
-      } else {
-        req.session.userId = user._id;
-        return res.redirect('/profile');
-      }
-    });
-  } else {
-    var err = new Error('All fields required.');
-    err.status = 400;
-    return next(err);
-  }
-})
-
-
-
-
-function saveUserAndRedirect(path) {
-  return async (req, res) => {
-    let user = req.user
-    req.body.password = await argon2.hash(req.body.password);
-    user.username = req.body.username
-    user.password = req.body.password
-    user.email = req.body.email
-    user.sex = req.body.sex
-    user.location = req.body.location
-    user.verified = false
-    try {
-      user = await user.save()
-      res.render(`users/${path}`)
-    } catch (e) {
-      res.render(`users/${path}`, { user: user })
-    }
-  }
-}
+  });
+});
 
 module.exports = router
